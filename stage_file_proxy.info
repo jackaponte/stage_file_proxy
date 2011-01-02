@@ -1,0 +1,5 @@
+; $Id$
+
+name = Stage File Proxy
+description = Proxies files from production server so you don't have to transfer them manually
+core = 6.x
