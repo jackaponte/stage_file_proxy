@@ -1,5 +1,4 @@
 <?php
-// $Id$ 
 
 function stage_file_proxy_init() {
   

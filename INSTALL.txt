@@ -1,4 +1,3 @@
-$Id$
 
 To use Stage File Proxy, you must add variables to $conf in settings.php:
 
