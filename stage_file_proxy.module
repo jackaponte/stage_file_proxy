@@ -15,7 +15,9 @@ function stage_file_proxy_init() {
     // is this an imagecache request? if so, request only the root file and let imagecache handle resizing
     if (variable_get('stage_file_proxy_use_imagecache_root', TRUE) && strpos($relative_path, 'imagecache') === 0) {
       $relative_path = preg_replace('/imagecache\/.*\/(.*)/U', '$1', $relative_path);
-      if (file_exists($file_dir . '/' . $relative_path)) {
+      // This image could be in the files directory, or elsewhere in our
+      // codebase. @see imagecache_create_path().
+      if (file_exists($file_dir . '/' . $relative_path) || file_exists($relative_path)) {
         return; // imagecache can generate it without our help.
       }
     }
