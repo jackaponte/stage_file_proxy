@@ -53,9 +53,11 @@ function _stage_file_proxy_fetch($server, $relative_path) {
   $tree = array();
   $file_dir = file_directory_path();
   $dir_path = $file_dir;
+  $dir_checks = array();
   foreach ($dirs as $dir) {
     $tree[] = $dir;
     $dir_path = $file_dir . '/' . implode('/', $tree);
+    $dir_checks[] = $dir_path;
   }
   $url = $server . '/' . $dir_path . '/' . rawurlencode($filename);
   $ch = curl_init($url);
@@ -64,10 +66,16 @@ function _stage_file_proxy_fetch($server, $relative_path) {
   curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.15) Gecko/20080623 Firefox/2.0.0.15');
   $res = curl_exec($ch);
   if (curl_getinfo($ch, CURLINFO_HTTP_CODE) < 300) {
-    if (file_check_directory($file_dir, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
-      file_put_contents($file_dir . '/' . $relative_path, $res);
-      return TRUE;
+    // If the full directory path does not exist, check and create each subdirectory.
+    if (!file_check_directory($dir_path, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
+      foreach ($dir_checks as $dir) {
+        if (!file_check_directory($dir, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
+          return FALSE;
+        }
+      }
     }
+    file_put_contents($file_dir . '/' . $relative_path, $res);
+    return TRUE;
   }
   return FALSE;
 }
