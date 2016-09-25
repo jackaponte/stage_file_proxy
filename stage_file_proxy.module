@@ -46,7 +46,7 @@ function _stage_file_proxy_fetch($server, $remote_file_dir, $relative_path) {
  * Helper to retrieve the file directory.
  */
 function _stage_file_proxy_file_dir() {
-  return variable_get('file_public_path', conf_path() . '/files');
+  return config_get('system.core', 'file_public_path');
 }
 
 /**
@@ -264,14 +264,15 @@ function _stage_file_proxy_get_current_file_uri($path = NULL) {
  */
 function stage_file_proxy_get_file_remote_url($relative_path, array $options = array()) {
   $base_url = &backdrop_static(__FUNCTION__);
+  $config = config('stage_file_proxy.settings');
 
   if (!isset($base_url)) {
     $base_url = FALSE;
 
-    if ($server = rtrim(variable_get('stage_file_proxy_origin'), '/')) {
+    if ($server = rtrim($config->get('origin'), '/')) {
       $base_url = $server . '/';
     }
-    if ($dir = trim(variable_get('stage_file_proxy_origin_dir', _stage_file_proxy_file_dir()), '/')) {
+    if ($dir = trim($config->get('origin_dir', _stage_file_proxy_file_dir()), '/')) {
       $base_url .= backdrop_encode_path($dir) . '/';
     }
   }
@@ -356,6 +357,7 @@ function stage_file_proxy_fetch_file($relative_path, array $options = array()) {
  *   FALSE if the file could not be processed with stage_file_proxy.
  */
 function stage_file_proxy_process_file_uri($uri) {
+  $config = config('stage_file_proxy.settings');
   // Prevent this function from being accidentally interpreted as a theme
   // process hook (in which case the first parameter would be an array).
   if (!is_string($uri)) {
@@ -371,12 +373,12 @@ function stage_file_proxy_process_file_uri($uri) {
     $relative_path = file_uri_target($uri);
     if ($proxy_url = stage_file_proxy_get_file_remote_url($relative_path)) {
       // Check if hotlinking is enabled.
-      if (variable_get('stage_file_proxy_hotlink', FALSE)) {
+      if ($config->get('hotlink')) {
         return $proxy_url;
       }
 
       // Is this imagecache? Request the root file and let imagecache resize.
-      if (variable_get('stage_file_proxy_use_imagecache_root', TRUE) && $original_path = _stage_file_proxy_image_style_path_original($relative_path, TRUE)) {
+      if ($config->get('use_imagecache_root') && $original_path = _stage_file_proxy_image_style_path_original($relative_path, TRUE)) {
         if (is_file($original_path)) {
           // image_style_deliver() can generate the derivative since the
           // source file exists.
