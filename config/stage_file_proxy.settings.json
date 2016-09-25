@@ -1,0 +1,7 @@
+{
+    "_config_name": "stage_file_proxy.settings",
+    "origin_dir": "./files",
+    "use_imagecache_root": 1,
+    "hotlink": 0,
+    "sslversion": "3"
+}
