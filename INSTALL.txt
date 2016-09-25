@@ -70,7 +70,7 @@ To automatically enable stage_file_proxy on your dev machine after sql-sync,
 add the following to your dev site alias file:
 
   $aliases['dev'] = array (
-    'root' => '/path/to/drupalroot',
+    'root' => '/path/to/backdroproot',
     'uri' => 'http://example.org',
     'target-command-specific' => array(
       'sql-sync' => array(
@@ -83,4 +83,4 @@ In order for this to work, you must copy the file
 drush/examples/sync_enable.drush.inc to your ~/.drush folder.
 For more information, see:
 
-http://drupalcode.org/project/drush.git/blob/HEAD:/examples/sync_enable.drush.inc
+http://backdropcode.org/project/drush.git/blob/HEAD:/examples/sync_enable.drush.inc
